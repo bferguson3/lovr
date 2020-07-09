@@ -39,6 +39,7 @@ CFLAGS_@(OCULUS) += -I@(OCULUS_PATH)/LibOVR/Include
 CFLAGS_@(VRAPI) += -DLOVR_USE_VRAPI
 CFLAGS_@(WEBXR) += -DLOVR_USE_WEBXR
 CFLAGS_@(LEAP) += -DLOVR_USE_LEAP
+CFLAGS_@(PICO) += -DLOVR_USE_PICO
 
 ## Platform
 ifeq (@(PLATFORM),)
@@ -182,6 +183,7 @@ ifeq ($(PLATFORM),android)
   ANDROID_JAR = @(ANDROID_SDK)/sdk/platforms/android-@(ANDROID_VERSION)/android.jar
   GLUE = @(ANDROID_SDK)/sdk/ndk-bundle/sources/android/native_app_glue
   VRAPI_LIB_PATH = $(DEPS)/VrApi/Libs/Android/arm64-v8a/Release
+  PICO_LIB_PATH = $(DEPS)/pico/jni/arm64-v8a
   CFLAGS += --target=aarch64-linux-android@(ANDROID_VERSION)
   CFLAGS += -I$(GLUE)
   LDFLAGS += --target=aarch64-linux-android@(ANDROID_VERSION)
@@ -193,9 +195,22 @@ ifeq ($(PLATFORM),android)
   PREFIX = $(LIB)/lib
   SUFFIX = .so
   CFLAGS_@(GRAPHICS) += -DLOVR_GLES
+  ACTIVITY_@(VRAPI) = Activity_vrapi
+  ACTIVITY_@(PICO) = Activity_pico
 
   ifneq (@(ANDROID_ASSETS),)
     ANDROID_ASSETS = -A @(ANDROID_ASSETS)
+  endif
+
+  CLASSPATH = $(ANDROID_JAR)
+
+  ifeq (@(PICO),y)
+    EXTRA_JARS = $(DEPS)/pico/classes.jar
+    ifeq (@(TUP_PLATFORM),win32)
+      CLASSPATH = "$(CLASSPATH);$(DEPS)/pico/classes.jar"
+    else
+      CLASSPATH = "$(CLASSPATH):$(DEPS)/pico/classes.jar"
+    endif
   endif
 
   # Macros
@@ -224,10 +239,12 @@ ifeq ($(PLATFORM),android)
     LDFLAGS_@(PHYSICS) += -L$(BUILD)/ode -lode
     LDFLAGS_@(ENET) += -L$(BUILD)/enet -lenet
     LDFLAGS_@(VRAPI) += -L$(VRAPI_LIB_PATH) -lvrapi
+    LDFLAGS_@(PICO) += -L$(PICO_LIB_PATH) -lPvr_NativeSDK
 
     LIBS_@(AUDIO) += $(BUILD)/openal/libopenal.*so*
     LIBS_@(PHYSICS) += $(BUILD)/ode/libode.so
     LIBS_@(VRAPI) += $(VRAPI_LIB_PATH)/libvrapi.so
+    LIBS_@(PICO) += $(PICO_LIB_PATH)/libPvr_NativeSDK.so
   endif
 endif
 

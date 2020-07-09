@@ -6,6 +6,7 @@ config/*
 *.json.h
 *.lua.h
 AndroidManifest*.xml
+Activity.java
 /build.sh
 /watch.sh
 /debug.sh
@@ -33,3 +34,4 @@ bin
 .vs
 /test
 deps/Vrapi
+deps/pico

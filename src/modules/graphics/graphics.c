@@ -364,7 +364,7 @@ Color lovrGraphicsGetBackgroundColor() {
 
 void lovrGraphicsSetBackgroundColor(Color color) {
   state.backgroundColor = state.linearBackgroundColor = color;
-#ifndef LOVR_WEBGL
+#if !defined(LOVR_WEBGL) && !defined(LOVR_USE_PICO)
   gammaCorrect(&state.linearBackgroundColor);
 #endif
 }
